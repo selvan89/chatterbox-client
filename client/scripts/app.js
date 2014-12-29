@@ -2,6 +2,7 @@ $(document).ready(function(){
   var $body = $('body');
   var $main = $('#main');
   var $message = $('#messageBox');
+  var $messages = $('#messages');
   var $submitButton = $('#submitButton');
   var $retrieveButton = $('#retrieveButton');
 
@@ -11,9 +12,9 @@ $(document).ready(function(){
       type: 'GET',
       success: function(data) {
         for (var i = 0; i < data.results.length; i++) {
-          if (data.results[i].username === "Vijay") {
-            console.log(data.results[i]);
-          }
+          var msgObj = data.results[i];
+          console.log('msgObj', msgObj);
+          $messages.append(msgObj.username + ': ' + msgObj.text + '<br/>');
         }
       },
       error: function (data) {
