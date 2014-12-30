@@ -11,10 +11,10 @@ $(document).ready(function(){
     $('div').remove('.singleMessage');
 
     $.ajax({
-      url: 'https://api.parse.com/1/classes/chatterbox/',
+      url: 'https://api.parse.com/1/classes/chatterbox?order=-createdAt',
       type: 'GET',
       success: function(data) {
-        console.log('first', data.results[0]);
+        // console.log('first', data.results[0]);
         var results = []
         for (var i = 0; i < data.results.length; i++) {
           var msgObj = data.results[i];
@@ -24,7 +24,19 @@ $(document).ready(function(){
           }
         }
         for (var j = 0; j < results.length; j++) {
-          $messages.append('<div class="singleMessage">' + results[j].username + ': ' + results[j].text + ' ' + results[j].createdAt + '</div>');
+          var msgText = results[j].text;
+          var filter = /^(\s|\w|\d|<br\/>)*?$/;
+          /*
+          //^(\s|\w|\d|<br\/>)*?$/g;
+          */
+          msgText = filter.exec(msgText);
+          if (msgText !== null) {
+            console.log(msgText[0]);
+          }
+          // $messages.text(function(msgText){
+          //   return msgText;
+          // });
+          $messages.append('<div class="singleMessage">' + msgText + ' ' + results[j].createdAt + '</div>');
         }
       },
       error: function (data) {
