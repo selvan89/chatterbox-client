@@ -46,6 +46,11 @@ body {
     line-height: 13px;
 }
 
+#sidebar {
+    float: left;
+    width: 60px;
+}
+
 form {
     padding: 20px;
     padding-left: 0;
