@@ -1,3 +1,6 @@
+var app = {};
+app.init = function(val) {return val;};
+
 $(document).ready(function(){
   var $body = $('body');
   var $main = $('#main');
@@ -5,38 +8,24 @@ $(document).ready(function(){
   var $messages = $('#messages');
   var $submitButton = $('#submitButton');
   var $retrieveButton = $('#retrieveButton');
-  var lastUpdate = 1419811200000; // This is 12/28/2014 at 16:00
 
   $retrieveButton.on('click', function(){
     $('div').remove('.singleMessage');
-
     $.ajax({
       url: 'https://api.parse.com/1/classes/chatterbox?order=-createdAt',
       type: 'GET',
       success: function(data) {
-        // console.log('first', data.results[0]);
-        var results = []
-        for (var i = 0; i < data.results.length; i++) {
+        // console.log('data.results[99]', data.results[99]);
+        for (var i = data.results.length - 1; i > data.results.length - 21; i--) {
           var msgObj = data.results[i];
-          var msgTime = new Date(msgObj.createdAt).getTime();
-          if (msgTime > lastUpdate) {
-            results.push(msgObj);
-          }
-        }
-        for (var j = 0; j < results.length; j++) {
-          var msgText = results[j].text;
+          var user = msgObj.username;
+          var msgText = msgObj.text;
           var filter = /^(\s|\w|\d|<br\/>)*?$/;
-          /*
-          //^(\s|\w|\d|<br\/>)*?$/g;
-          */
           msgText = filter.exec(msgText);
-          if (msgText !== null) {
-            console.log(msgText[0]);
+          user = filter.exec(user);
+          if (msgText !== null && user !== null && msgText[0] !== 'undefined') {
+            $messages.append('<div class="singleMessage">' + msgText[0] + ' : ' + user[0] + '</div>');
           }
-          // $messages.text(function(msgText){
-          //   return msgText;
-          // });
-          $messages.append('<div class="singleMessage">' + msgText + ' ' + results[j].createdAt + '</div>');
         }
       },
       error: function (data) {
@@ -45,14 +34,11 @@ $(document).ready(function(){
     });
   });
 
-//create on click method for submitting chat
-  $submitButton.on('click', function(){
-    var message = $message.val();
-    console.log(message);
+  var message = $message.val();
+  console.log(message);
 
-//How to send an ajax request and look at its response.
+  app.send = function(message) {
     $.ajax({
-      // always use this url
       url: 'https://api.parse.com/1/classes/chatterbox',
       type: 'POST',
       data: JSON.stringify(message),
@@ -65,6 +51,10 @@ $(document).ready(function(){
         console.error('chatterbox: Failed to send message');
       }
     });
+  }
+
+  $submitButton.on('click', function(){
+    app.send();
   });
 
 });
