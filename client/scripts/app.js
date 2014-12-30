@@ -5,16 +5,26 @@ $(document).ready(function(){
   var $messages = $('#messages');
   var $submitButton = $('#submitButton');
   var $retrieveButton = $('#retrieveButton');
+  var lastUpdate = 1419811200000; // This is 12/28/2014 at 16:00
 
   $retrieveButton.on('click', function(){
+    $('div').remove('.singleMessage');
+
     $.ajax({
       url: 'https://api.parse.com/1/classes/chatterbox/',
       type: 'GET',
       success: function(data) {
+        console.log('first', data.results[0]);
+        var results = []
         for (var i = 0; i < data.results.length; i++) {
           var msgObj = data.results[i];
-          console.log('msgObj', msgObj);
-          $messages.append(msgObj.username + ': ' + msgObj.text + '<br/>');
+          var msgTime = new Date(msgObj.createdAt).getTime();
+          if (msgTime > lastUpdate) {
+            results.push(msgObj);
+          }
+        }
+        for (var j = 0; j < results.length; j++) {
+          $messages.append('<div class="singleMessage">' + results[j].username + ': ' + results[j].text + ' ' + results[j].createdAt + '</div>');
         }
       },
       error: function (data) {
